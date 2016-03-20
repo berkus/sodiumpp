@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 3.8)
 project (sodiumpp)
 
+if (CMAKE_VERSION VERSION_GREATER 3.0.0 OR CMAKE_VERSION VERSION_EQUAL 3.0.0)
+    cmake_policy(SET CMP0042 OLD)
+endif ()
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 include(FindSodium)
 include_directories(${SODIUM_INCLUDE_DIRS})
