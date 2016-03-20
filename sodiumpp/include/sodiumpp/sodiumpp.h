@@ -252,7 +252,7 @@ namespace sodiumpp {
         /**
          * Construct a secret key from a pregenerated public and secret key.
          */
-        secret_key(const public_key<P>& pk, const encoded_bytes& secret_bytes) : pk(pk), secret_bytes(secret_bytes.to_binary()) {}
+        secret_key(const public_key<P>& pk, const encoded_bytes& secret_bytes) : secret_bytes(secret_bytes.to_binary()), pk(pk) {}
         /**
          * Copy constructor
          */
@@ -458,7 +458,10 @@ namespace sodiumpp {
         /**
          * Construct from the receiver's public key pk, the sender's secret key sk and an encoded constant part for the nonces.
          */
-        boxer(const box_public_key& pk, const box_secret_key& sk, const encoded_bytes& nonce_constant) : k(crypto_box_beforenm(pk.get().to_binary(), sk.get().to_binary())), n(nonce_constant, sk.pk.get().to_binary() > pk.get().to_binary()) {
+        boxer(const box_public_key& pk, const box_secret_key& sk, const encoded_bytes& nonce_constant)
+            : n(nonce_constant, sk.pk.get().to_binary() > pk.get().to_binary())
+            , k(crypto_box_beforenm(pk.get().to_binary(), sk.get().to_binary()))
+        {
             mlock(k);
         }
         /**
@@ -517,7 +520,10 @@ namespace sodiumpp {
         /**
          * Construct from the sender's public key pk, the receiver's secret key sk and an encoded constant part for the nonces.
          */
-        unboxer(const box_public_key& pk, const box_secret_key& sk, const encoded_bytes& nonce_constant) : k(crypto_box_beforenm(pk.get().to_binary(), sk.get().to_binary())), n(nonce_constant, pk.get().to_binary() > sk.pk.get().to_binary()) {
+        unboxer(const box_public_key& pk, const box_secret_key& sk, const encoded_bytes& nonce_constant)
+            : n(nonce_constant, pk.get().to_binary() > sk.pk.get().to_binary())
+            , k(crypto_box_beforenm(pk.get().to_binary(), sk.get().to_binary()))
+        {
             mlock(k);
         }
         /**
