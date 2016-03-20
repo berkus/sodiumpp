@@ -53,11 +53,13 @@ std::string sodiumpp::crypto_box(const std::string &m,const std::string &n,const
     for (size_t i = 0;i < crypto_box_ZEROBYTES;++i) mpad[i] = 0;
     for (size_t i = crypto_box_ZEROBYTES;i < mlen;++i) mpad[i] = m[i - crypto_box_ZEROBYTES];
     unsigned char cpad[mlen];
-    ::crypto_box(cpad,mpad,mlen,
+    if (::crypto_box(cpad,mpad,mlen,
                (const unsigned char *) n.c_str(),
                (const unsigned char *) pk.c_str(),
                (const unsigned char *) sk.c_str()
-               );
+               ) != 0) {
+      throw sodiumpp::crypto_error("crypto_box failed");
+    }
     return std::string(
                   (char *) cpad + crypto_box_BOXZEROBYTES,
                   mlen - crypto_box_BOXZEROBYTES
@@ -76,7 +78,12 @@ std::string sodiumpp::crypto_box_beforenm(const std::string &pk, const std::stri
     if (pk.size() != crypto_box_PUBLICKEYBYTES) throw std::invalid_argument("incorrect public-key length");
     if (sk.size() != crypto_box_SECRETKEYBYTES) throw std::invalid_argument("incorrect secret-key length");
     std::string k(crypto_box_BEFORENMBYTES, 0);
-    ::crypto_box_beforenm((unsigned char *)&k[0], (const unsigned char *)&pk[0], (const unsigned char *)&sk[0]);
+    if (::crypto_box_beforenm(
+      (unsigned char *)&k[0],
+      (const unsigned char *)&pk[0],
+      (const unsigned char *)&sk[0]) != 0) {
+      throw sodiumpp::crypto_error("crypto_box_beforenm failed");
+    }
     return k;
 }
 
@@ -183,7 +190,11 @@ std::string sodiumpp::crypto_scalarmult(const std::string &n,const std::string &
     unsigned char q[crypto_scalarmult_BYTES];
     if (n.size() != crypto_scalarmult_SCALARBYTES) throw std::invalid_argument("incorrect scalar length");
     if (p.size() != crypto_scalarmult_BYTES) throw std::invalid_argument("incorrect element length");
-    ::crypto_scalarmult(q,(const unsigned char *) n.c_str(),(const unsigned char *) p.c_str());
+    if (::crypto_scalarmult(q,
+      (const unsigned char *) n.c_str(),
+      (const unsigned char *) p.c_str()) != 0) {
+      throw sodiumpp::crypto_error("crypto_scalarmult failed");
+    }
     return std::string((char *) q,sizeof q);
 }
 
