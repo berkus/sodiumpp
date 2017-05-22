@@ -156,7 +156,7 @@ namespace sodiumpp {
         /**
          * Constructor from a string of bytes that is assumed to be encoded in the specified encoding. 
          */
-        encoded_bytes(const std::string& bytes, enum encoding enc) : bytes(bytes), enc(enc) {}
+        encoded_bytes(const std::string& bytes_, enum encoding enc_) : bytes(bytes_), enc(enc_) {}
         /**
          * Convenience method for quickly getting the binary string corresponding to the encoded bytes.
          */
@@ -218,7 +218,7 @@ namespace sodiumpp {
         /**
          * Construct a public_key from encoded bytes
          */
-        public_key(const encoded_bytes& bytes) : bytes(bytes.to_binary()) {}
+        public_key(const encoded_bytes& bytes_) : bytes(bytes_.to_binary()) {}
         /**
          * Get the encoding encoded bytes of this public_key
          */
@@ -252,7 +252,7 @@ namespace sodiumpp {
         /**
          * Construct a secret key from a pregenerated public and secret key.
          */
-        secret_key(const public_key<P>& pk, const encoded_bytes& secret_bytes) : secret_bytes(secret_bytes.to_binary()), pk(pk) {}
+        secret_key(const public_key<P>& pk_, const encoded_bytes& secret_bytes_) : secret_bytes(secret_bytes_.to_binary()), pk(pk_) {}
         /**
          * Copy constructor
          */
