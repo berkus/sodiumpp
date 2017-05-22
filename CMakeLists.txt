@@ -27,7 +27,7 @@ if(SODIUMPP_STATIC)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 	add_library(sodiumpp SHARED sodiumpp/sodiumpp.cpp sodiumpp/z85/z85.c sodiumpp/z85/z85_impl.cpp)
-    target_link_libraries(sodiumpp sodium)
+    target_link_libraries(sodiumpp ${SODIUM_LIBRARIES})
     set(SODIUMLIB ${SODIUM_SHARED_LIBRARIES})
 endif()
 
