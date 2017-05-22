@@ -448,7 +448,19 @@ namespace sodiumpp {
         s << bin2hex(n.constant()) << " - " << bin2hex(n.sequential());
         return s;
     }
-    
+
+    /**
+     * Nonce with fixed prefix and randomly-generated sequential part.
+     */
+    template <unsigned int sequentialbytes>
+    class random_nonce : public nonce<sequentialbytes>
+    {
+    public:
+        random_nonce(const std::string& constant)
+            : nonce<sequentialbytes>(constant, randombytes(sequentialbytes))
+        {}
+    };
+
     /**
      * Boxes a series of messages between sender's secret key and a receiver's public key using automatically generated nonces.
      * The sequential part of nonces is even if the sender's public key is lexicographically smaller than the receiver's public key, and uneven (odd, not divisible by 2) otherwise.
