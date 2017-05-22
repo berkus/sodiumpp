@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 project (sodiumpp)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+include(FindSodium)
+include_directories(${SODIUM_INCLUDE_DIRS})
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
@@ -15,11 +19,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sodiumpp/include)
 
 if(SODIUMPP_STATIC)
 	add_library(sodiumpp STATIC sodiumpp/sodiumpp.cpp sodiumpp/z85/z85.c sodiumpp/z85/z85_impl.cpp)
-    find_library(SODIUMLIB libsodium.a)
+    set(SODIUMLIB ${SODIUM_LIBRARIES})
 else()
 	add_library(sodiumpp SHARED sodiumpp/sodiumpp.cpp sodiumpp/z85/z85.c sodiumpp/z85/z85_impl.cpp)
     target_link_libraries(sodiumpp sodium)
-    find_library(SODIUMLIB sodium)
+    set(SODIUMLIB ${SODIUM_SHARED_LIBRARIES})
 endif()
 
 if(SODIUMPP_EXAMPLE)
@@ -33,4 +37,4 @@ if(SODIUMPP_TEST)
 endif()
 
 install(DIRECTORY sodiumpp/include/sodiumpp DESTINATION include)
-install_targets(/lib sodiumpp)
+install(TARGETS sodiumpp DESTINATION lib)
