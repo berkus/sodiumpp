@@ -51,8 +51,13 @@ int main(int argc, const char ** argv) {
     cout << "Unboxed message: " << unboxed;
     cout << endl;
 
-    boxed = client_boxer.box("From sodiumpp!\n", used_n);
-    unboxed = server_unboxer.unbox(boxed, used_n);
+    // Box with server private key for client public key to unbox.
+    boxer<nonce64> server_boxer(sk_client.pk, sk_server);
+    // Unbox with client private key and passed server nonce.
+    unboxer<nonce64> client_unboxer(sk_server.pk, sk_client, server_boxer.get_nonce_constant());
+
+    boxed = server_boxer.box("From sodiumpp!\n", used_n);
+    unboxed = client_unboxer.unbox(boxed, used_n);
     cout << "Nonce (hex): " << used_n.get(encoding::hex).bytes << endl;
     cout << "Boxed message (z85): " << boxed.to(encoding::z85).bytes << endl;
     cout << "Unboxed message: " << unboxed;
