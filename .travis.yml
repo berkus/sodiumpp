@@ -1,13 +1,26 @@
 sudo: required
-language: generic
+dist: trusty
 
-services:
-    - docker
+language: cpp
+
+services: docker
+
+notifications:
+  recipients: berkus@metta.systems
+  email:
+    on_success: change
+    on_failure: always
+
+matrix:
+  include:
+    - os: linux
+      env: BUILD_TYPE=Release
 
 before_install:
-    - docker build -t rubendv/sodiumpp travis
+  - docker pull berkus/docker-cpp-ci:latest
 
 script:
-    - docker run -it --rm -v $PWD:/opt/sodiumpp rubendv/sodiumpp /opt/sodiumpp/travis/build.sh
-    - docker run -it --rm -v $PWD:/opt/sodiumpp rubendv/sodiumpp /opt/sodiumpp/build/tests --reporter=spec
-    - docker run -it --rm -v $PWD:/opt/sodiumpp rubendv/sodiumpp /opt/sodiumpp/build/example
+  - mkdir _build_
+  - docker run --rm -v $PWD:/repo -v ~/.travis:/travis berkus/docker-cpp-ci /bin/sh -c "cd /repo/_build_ && CC=clang CXX=clang++ cmake -G Ninja -DTRAVIS_CI=YES -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DSODIUMPP_STATIC=ON -DSODIUMPP_TEST=ON -DSODIUMPP_EXAMPLE=ON .. && cmake --build ."
+  - docker run --rm -v $PWD:/repo -v ~/.travis:/travis berkus/docker-cpp-ci /bin/sh -c "/repo/_build_/tests --reporter=spec"
+  - docker run --rm -v $PWD:/repo -v ~/.travis:/travis berkus/docker-cpp-ci /bin/sh -c "/repo/_build_/example"
