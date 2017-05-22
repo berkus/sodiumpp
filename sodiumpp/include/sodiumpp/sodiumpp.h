@@ -324,10 +324,24 @@ namespace sodiumpp {
         nonce() : nonce(encoded_bytes("", encoding::binary), false, false) {}
         /**
          * Construct a nonce from the encoded constant.
-         * If the length of the constant is 0 and generate_constant is true (the default), the constant bytes will be initialized randomly, and if generated_constant is false they will be set to zero.
-         * If the length of the constant is > 0, the length must be exactly constantbytes and will be used to initialize the constant part of the nonce.
+         * If the length of the constant is 0 and generate_constant is true (the default),
+         * the constant bytes will be initialized randomly, and if generated_constant is false
+         * they will be set to zero.
+         * If the length of the constant is > 0, the length must be exactly constantbytes and
+         * will be used to initialize the constant part of the nonce.
          * Throws std::invalid_argument if constant does not have the correct length.
-         * If uneven is true the sequential part of the generated nonces will always be uneven (odd, not divisible by 2), otherwise the sequential part will always be even (divisible by 2).
+         * If uneven is true the sequential part of the generated nonces will always be uneven
+         * (odd, not divisible by 2), otherwise the sequential part will always
+         * be even (divisible by 2).
+         *
+         * Distinct messages between the same {sender, receiver} set are required
+         * to have distinct nonces. For example, the lexicographically smaller
+         * public key can use nonce 1 for its first message to the other key,
+         * nonce 3 for its second message, nonce 5 for its third message, etc.,
+         * while the lexicographically larger public key uses nonce 2 for its
+         * first message to the other key, nonce 4 for its second message,
+         * nonce 6 for its third message, etc. Nonces are long enough that
+         * randomly generated nonces have negligible risk of collision.
          */
         nonce(const encoded_bytes& constant, bool uneven, bool generate_constant=true) : bytes(crypto_box_NONCEBYTES, 0), overflow(false) {
             std::string constant_decoded = constant.to_binary();
